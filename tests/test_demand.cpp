@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(test_categories_save)
     BOOST_REQUIRE(error == 0);
     BOOST_CHECK(ndem == 1);
 
-    char demname[31];
+    char demname[127];
     error = EN_getdemandname(ph, Nindex, ndem, demname);
     BOOST_REQUIRE(error == 0);
 
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_categories_reopen, * boost::unit_test::depends_on("tes
     BOOST_REQUIRE(error == 0);
     BOOST_CHECK(ndem == 1);
 
-    char demname[31];
+    char demname[127];
     error = EN_getdemandname(ph, Nindex, ndem, demname);
     BOOST_CHECK(error == 0);
 

@@ -10,7 +10,7 @@ interface
 const
 
 { These are codes used by the DLL functions }
- EN_MAXID = 31;        { Max. # characters in ID name }
+ EN_MAXID = 127;        { Max. # characters in ID name }
  EN_MAXMSG = 255;      { Max. # characters in strings }
  EN_MISSING = -1.0E10;
  EN_SET_CLOSED = -1.0E10;

@@ -11,9 +11,8 @@
 #define EPANET_OUTPUT_H_
 /* Epanet Results binary file API */
 
-
-#define MAXFNAME     259   // Max characters in file name
-#define MAXID         31   // Max characters in ID name
+#define MAXFNAME 259 // Max characters in file name
+#define MAXID 127    // Max characters in ID name
 
 
 // This is an opaque pointer to struct. Do not access variables.

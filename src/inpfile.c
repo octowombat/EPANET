@@ -155,8 +155,9 @@ int saveinpfile(Project *pr, const char *fname)
     for (i = 1; i <= net->Njuncs; i++)
     {
         node = &net->Node[i];
-        fprintf(f, "\n %-31s %12.4f", node->ID, node->El * pr->Ucf[ELEV]);
-        if (node->Comment) fprintf(f, "  ;%s", node->Comment);
+        fprintf(f, "\n %-127s %12.4f", node->ID, node->El * pr->Ucf[ELEV]);
+        if (node->Comment)
+            fprintf(f, "  ;%s", node->Comment);
     }
 
     // Write [RESERVOIRS] section
@@ -168,11 +169,14 @@ int saveinpfile(Project *pr, const char *fname)
         if (tank->A == 0.0)
         {
             node = &net->Node[tank->Node];
-            sprintf(s, " %-31s %12.4f", node->ID, node->El * pr->Ucf[ELEV]);
-            if ((j = tank->Pat) > 0) sprintf(s1, " %s", net->Pattern[j].ID);
-            else strcpy(s1, " ");
-            fprintf(f, "\n%s %-31s", s, s1);
-            if (node->Comment) fprintf(f, " ;%s", node->Comment);
+            sprintf(s, " %-127s %12.4f", node->ID, node->El * pr->Ucf[ELEV]);
+            if ((j = tank->Pat) > 0)
+                sprintf(s1, " %s", net->Pattern[j].ID);
+            else
+                strcpy(s1, " ");
+            fprintf(f, "\n%s %-127s", s, s1);
+            if (node->Comment)
+                fprintf(f, " ;%s", node->Comment);
         }
     }
 
@@ -185,19 +189,24 @@ int saveinpfile(Project *pr, const char *fname)
         if (tank->A > 0.0)
         {
             node = &net->Node[tank->Node];
-            sprintf(s, " %-31s %12.4f %12.4f %12.4f %12.4f %12.4f %12.4f",
+            sprintf(s, " %-127s %12.4f %12.4f %12.4f %12.4f %12.4f %12.4f",
                     node->ID, node->El * pr->Ucf[ELEV],
                     (tank->H0 - node->El) * pr->Ucf[ELEV],
                     (tank->Hmin - node->El) * pr->Ucf[ELEV],
                     (tank->Hmax - node->El) * pr->Ucf[ELEV],
                     sqrt(4.0 * tank->A / PI) * pr->Ucf[ELEV],
                     tank->Vmin * SQR(pr->Ucf[ELEV]) * pr->Ucf[ELEV]);
-            if ((j = tank->Vcurve) > 0) sprintf(s1, "%s", net->Curve[j].ID);
-            else if (tank->CanOverflow) strcpy(s1, "*");
-            else strcpy(s1, " ");
-            fprintf(f, "\n%s %-31s", s, s1);
-            if (tank->CanOverflow) fprintf(f, "  YES  ");
-            if (node->Comment) fprintf(f, " ;%s", node->Comment);
+            if ((j = tank->Vcurve) > 0)
+                sprintf(s1, "%s", net->Curve[j].ID);
+            else if (tank->CanOverflow)
+                strcpy(s1, "*");
+            else
+                strcpy(s1, " ");
+            fprintf(f, "\n%s %-127s", s, s1);
+            if (tank->CanOverflow)
+                fprintf(f, "  YES  ");
+            if (node->Comment)
+                fprintf(f, " ;%s", node->Comment);
         }
     }
 
@@ -214,7 +223,7 @@ int saveinpfile(Project *pr, const char *fname)
             if (hyd->Formflag == DW)  kc = kc * pr->Ucf[ELEV] * 1000.0;
             km = link->Km * SQR(d) * SQR(d) / 0.02517;
 
-            sprintf(s, " %-31s %-31s %-31s %12.4f %12.4f %12.4f %12.4f",
+            sprintf(s, " %-127s %-127s %-127s %12.4f %12.4f %12.4f %12.4f",
                     link->ID, net->Node[link->N1].ID, net->Node[link->N2].ID,
                     link->Len * pr->Ucf[LENGTH], d * pr->Ucf[DIAM], kc, km);
 
@@ -234,7 +243,7 @@ int saveinpfile(Project *pr, const char *fname)
         n = net->Pump[i].Link;
         link = &net->Link[n];
         pump = &net->Pump[i];
-        sprintf(s, " %-31s %-31s %-31s", link->ID, net->Node[link->N1].ID,
+        sprintf(s, " %-127s %-127s %-127s", link->ID, net->Node[link->N1].ID,
                 net->Node[link->N2].ID);
 
         // Pump has constant power
@@ -303,7 +312,7 @@ int saveinpfile(Project *pr, const char *fname)
         }
         km = link->Km * SQR(d) * SQR(d) / 0.02517;
 
-        sprintf(s, " %-31s %-31s %-31s %12.4f %5s",
+        sprintf(s, " %-127s %-127s %-127s %12.4f %5s",
                 link->ID, net->Node[link->N1].ID,
                 net->Node[link->N2].ID, d * pr->Ucf[DIAM],
                 LinkTxt[link->Type]);
@@ -311,12 +320,12 @@ int saveinpfile(Project *pr, const char *fname)
         // For GPV, setting = head curve index
         if (link->Type == GPV && (j = ROUND(link->Kc)) > 0)
         {
-            sprintf(s1, "%-31s %12.4f", net->Curve[j].ID, km);
+            sprintf(s1, "%-127s %12.4f", net->Curve[j].ID, km);
         }
         // For PCV add loss curve if present
         else if (link->Type == PCV && (j = net->Valve[i].Curve) > 0)
         {
-            sprintf(s1, "%12.4f %12.4f %-31s", kc, km, net->Curve[j].ID);
+            sprintf(s1, "%12.4f %12.4f %-127s", kc, km, net->Curve[j].ID);
         }
         else sprintf(s1, "%12.4f %12.4f", kc, km);
         fprintf(f, "\n%s %s", s, s1);
@@ -333,12 +342,16 @@ int saveinpfile(Project *pr, const char *fname)
         node = &net->Node[i];
         for (demand = node->D; demand != NULL; demand = demand->next)
         {
-            if (demand->Base == 0.0) continue;
-            sprintf(s, " %-31s %14.6f", node->ID, ucf * demand->Base);
-            if ((j = demand->Pat) > 0) sprintf(s1, " %-31s", net->Pattern[j].ID);
-            else strcpy(s1, " ");
-            fprintf(f, "\n%s %-31s", s, s1);
-            if (demand->Name) fprintf(f, " ;%s", demand->Name);
+            if (demand->Base == 0.0)
+                continue;
+            sprintf(s, " %-127s %14.6f", node->ID, ucf * demand->Base);
+            if ((j = demand->Pat) > 0)
+                sprintf(s1, " %-127s", net->Pattern[j].ID);
+            else
+                strcpy(s1, " ");
+            fprintf(f, "\n%s %-127s", s, s1);
+            if (demand->Name)
+                fprintf(f, " ;%s", demand->Name);
         }
     }
 
@@ -351,7 +364,7 @@ int saveinpfile(Project *pr, const char *fname)
         node = &net->Node[i];
         if (node->Ke == 0.0) continue;
         ke = pr->Ucf[FLOW] / pow(pr->Ucf[PRESSURE] * node->Ke, (1.0 / hyd->Qexp));
-        fprintf(f, "\n %-31s %14.6f", node->ID, ke);
+        fprintf(f, "\n %-127s %14.6f", node->ID, ke);
     }
 
     // Write [STATUS] section
@@ -364,7 +377,7 @@ int saveinpfile(Project *pr, const char *fname)
         {
             if (link->Status == CLOSED)
             {
-                fprintf(f, "\n %-31s %s", link->ID, StatTxt[CLOSED]);
+                fprintf(f, "\n %-127s %s", link->ID, StatTxt[CLOSED]);
             }
 
             // Write pump speed here for pumps with old-style pump curve input
@@ -375,7 +388,7 @@ int saveinpfile(Project *pr, const char *fname)
                 if (pump->Hcurve == 0 && pump->Ptype != CONST_HP &&
                     link->Kc != 1.0)
                 {
-                    fprintf(f, "\n %-31s %-.4f", link->ID, link->Kc);
+                    fprintf(f, "\n %-127s %-.4f", link->ID, link->Kc);
                 }
             }
         }
@@ -385,11 +398,11 @@ int saveinpfile(Project *pr, const char *fname)
         {
             if (link->Status == OPEN)
             {
-                fprintf(f, "\n %-31s %s", link->ID, StatTxt[OPEN]);
+                fprintf(f, "\n %-127s %s", link->ID, StatTxt[OPEN]);
             }
             if (link->Status == CLOSED)
             {
-                fprintf(f, "\n%-31s %s", link->ID, StatTxt[CLOSED]);
+                fprintf(f, "\n%-127s %s", link->ID, StatTxt[CLOSED]);
             }
         }
     }
@@ -403,7 +416,8 @@ int saveinpfile(Project *pr, const char *fname)
         if (net->Pattern[i].Comment) fprintf(f, "\n;%s", net->Pattern[i].Comment);
         for (j = 0; j < net->Pattern[i].Length; j++)
         {
-            if (j % 6 == 0) fprintf(f, "\n %-31s", net->Pattern[i].ID);
+            if (j % 6 == 0)
+                fprintf(f, "\n %-127s", net->Pattern[i].ID);
             fprintf(f, " %12.4f", net->Pattern[i].F[j]);
         }
     }
@@ -417,7 +431,7 @@ int saveinpfile(Project *pr, const char *fname)
         for (j = 0; j < net->Curve[i].Npts; j++)
         {
             curve = &net->Curve[i];
-            fprintf(f, "\n %-31s %12.4f %12.4f", curve->ID, curve->X[j], curve->Y[j]);
+            fprintf(f, "\n %-127s %12.4f %12.4f", curve->ID, curve->X[j], curve->Y[j]);
         }
     }
 
@@ -505,8 +519,9 @@ int saveinpfile(Project *pr, const char *fname)
     for (i = 1; i <= net->Nnodes; i++)
     {
         node = &net->Node[i];
-        if (node->C0 == 0.0) continue;
-        fprintf(f, "\n %-31s %14.6f", node->ID, node->C0 * pr->Ucf[QUALITY]);
+        if (node->C0 == 0.0)
+            continue;
+        fprintf(f, "\n %-127s %14.6f", node->ID, node->C0 * pr->Ucf[QUALITY]);
     }
 
     // Write [SOURCES] section
@@ -516,8 +531,9 @@ int saveinpfile(Project *pr, const char *fname)
     {
         node = &net->Node[i];
         source = node->S;
-        if (source == NULL) continue;
-        sprintf(s, " %-31s %-8s %14.6f", node->ID, SourceTxt[source->Type],
+        if (source == NULL)
+            continue;
+        sprintf(s, " %-127s %-8s %14.6f", node->ID, SourceTxt[source->Type],
                 source->C0);
         if ((j = source->Pat) > 0)
         {
@@ -533,8 +549,9 @@ int saveinpfile(Project *pr, const char *fname)
     for (i = 1; i <= net->Ntanks; i++)
     {
         tank = &net->Tank[i];
-        if (tank->A == 0.0) continue;
-        fprintf(f, "\n %-31s %-8s %12.4f", net->Node[tank->Node].ID,
+        if (tank->A == 0.0)
+            continue;
+        fprintf(f, "\n %-127s %-8s %12.4f", net->Node[tank->Node].ID,
                 MixTxt[tank->MixModel], tank->V1frac);
     }
 
@@ -565,11 +582,11 @@ int saveinpfile(Project *pr, const char *fname)
         if (link->Type > PIPE) continue;
         if (link->Kb != qual->Kbulk)
         {
-            fprintf(f, "\n BULK   %-31s %-.6f", link->ID, link->Kb * SECperDAY);
+            fprintf(f, "\n BULK   %-127s %-.6f", link->ID, link->Kb * SECperDAY);
         }
         if (link->Kw != qual->Kwall)
         {
-            fprintf(f, "\n WALL   %-31s %-.6f", link->ID, link->Kw * SECperDAY);
+            fprintf(f, "\n WALL   %-127s %-.6f", link->ID, link->Kw * SECperDAY);
         }
     }
 
@@ -580,7 +597,7 @@ int saveinpfile(Project *pr, const char *fname)
         if (tank->A == 0.0) continue;
         if (tank->Kb != qual->Kbulk)
         {
-            fprintf(f, "\n TANK   %-31s %-.6f", net->Node[tank->Node].ID,
+            fprintf(f, "\n TANK   %-127s %-.6f", net->Node[tank->Node].ID,
                     tank->Kb * SECperDAY);
         }
     }
@@ -607,17 +624,17 @@ int saveinpfile(Project *pr, const char *fname)
         pump = &net->Pump[i];
         if (pump->Ecost > 0.0)
         {
-            fprintf(f, "\n PUMP %-31s PRICE   %-.4f", net->Link[pump->Link].ID,
+            fprintf(f, "\n PUMP %-127s PRICE   %-.4f", net->Link[pump->Link].ID,
                     pump->Ecost);
         }
         if (pump->Epat > 0.0)
         {
-            fprintf(f, "\n PUMP %-31s PATTERN %s", net->Link[pump->Link].ID,
+            fprintf(f, "\n PUMP %-127s PATTERN %s", net->Link[pump->Link].ID,
                     net->Pattern[pump->Epat].ID);
         }
         if (pump->Ecurve > 0.0)
         {
-            fprintf(f, "\n PUMP %-31s EFFIC   %s", net->Link[pump->Link].ID,
+            fprintf(f, "\n PUMP %-127s EFFIC   %s", net->Link[pump->Link].ID,
                     net->Curve[pump->Ecurve].ID);
         }
     }
@@ -662,20 +679,20 @@ int saveinpfile(Project *pr, const char *fname)
 
     switch (qual->Qualflag)
     {
-        case CHEM:
-          fprintf(f, "\n QUALITY             %s %s",
-                  qual->ChemName, qual->ChemUnits);
-          break;
-        case TRACE:
-          fprintf(f, "\n QUALITY             TRACE %-31s",
-                  net->Node[qual->TraceNode].ID);
-          break;
-        case AGE:
-          fprintf(f, "\n QUALITY             AGE");
-          break;
-        case NONE:
-          fprintf(f, "\n QUALITY             NONE");
-          break;
+    case CHEM:
+        fprintf(f, "\n QUALITY             %s %s",
+                qual->ChemName, qual->ChemUnits);
+        break;
+    case TRACE:
+        fprintf(f, "\n QUALITY             TRACE %-127s",
+                net->Node[qual->TraceNode].ID);
+        break;
+    case AGE:
+        fprintf(f, "\n QUALITY             AGE");
+        break;
+    case NONE:
+        fprintf(f, "\n QUALITY             NONE");
+        break;
     }
 
     if (hyd->DefPat > 0)
@@ -809,8 +826,8 @@ int saveinpfile(Project *pr, const char *fname)
         if (link->Vertices != NULL)
         {
             for (j = 0; j < link->Vertices->Npts; j++)
-                fprintf(f, "\n %-31s %14.6f %14.6f",
-                    link->ID, link->Vertices->X[j], link->Vertices->Y[j]);
+                fprintf(f, "\n %-127s %14.6f %14.6f",
+                        link->ID, link->Vertices->X[j], link->Vertices->Y[j]);
         }
     }
 
